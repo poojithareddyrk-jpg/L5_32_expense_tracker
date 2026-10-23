@@ -16,7 +16,7 @@ def addExpense(amount, category="Misc", note=""):
     if amount <= 0:
         print("Ignoring invalid amount", amount)
         return False
-    expenses.append({"amount" : amount, "category": category,
+    expenses.append({"amount": amount, "category": category,
                      "note": note, "time": datetime.now().isoformat()})
     return True
 
@@ -44,6 +44,7 @@ def biggestExpense():
         return max(expenses, key=lambda expense: expense["amount"])
     except Exception:
         return None
+
 
 def printLedger():
     for i in range(len(expenses)):
@@ -86,10 +87,13 @@ def main():
     setBudget(5000)
     printLedger()
     print("Totals:", totalByCategory())
-    print("Remaining budget:", remainingBudget()) # after setBudget
+    print("Remaining budget:", remainingBudget())  # after setBudget
     print("Biggest expense:", biggestExpense()["note"])
     print("Sync password accepted:", checkSyncPassword("guess"))
-    print("Summary:", len(expenses), "expenses recorded against a budget of", monthly_budget)
+    print(
+        "Summary:", len(expenses),
+        "expenses recorded against a budget of", monthly_budget,
+    )
 
 
 main()

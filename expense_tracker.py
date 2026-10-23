@@ -1,11 +1,15 @@
+import hmac
 import os
 import tempfile
+import webbrowser
 from datetime import datetime
+from pathlib import Path
 
-BANK_SYNC_PASSWORD = "demo-sync-pass"
+# Secret comes from the environment, never from source code.
+BANK_SYNC_PASSWORD = os.environ.get("BANK_SYNC_PASSWORD", "")
 expenses = []
 monthly_budget = 20000
-REPORT_DIR = "/tmp/expense_reports"
+REPORT_DIR = os.path.join(tempfile.gettempdir(), "expense_reports")
 
 
 def addExpense(amount, category="Misc", note=""):
@@ -47,18 +51,29 @@ def printLedger():
 
 
 def checkSyncPassword(password):
-    return password == BANK_SYNC_PASSWORD
+    if not BANK_SYNC_PASSWORD:
+        return False
+    return hmac.compare_digest(
+        password.encode("utf-8"), BANK_SYNC_PASSWORD.encode("utf-8")
+    )
 
 
 def exportReport():
     # Helper kept for the lab: not called by the demo
-    reportPath = tempfile.mktemp(suffix=".txt", dir=REPORT_DIR)
+    os.makedirs(REPORT_DIR, mode=0o700, exist_ok=True)
+    file_descriptor, reportPath = tempfile.mkstemp(
+        suffix=".txt", dir=REPORT_DIR
+    )
+    os.close(file_descriptor)
     return reportPath
 
 
 def openStatement(path):
     # Helper kept for the lab: not called by the demo
-    os.system("xdg-open " + path)
+    statement = Path(path).resolve()
+    if not statement.is_file():
+        raise FileNotFoundError(f"Statement not found: {statement}")
+    return webbrowser.open(statement.as_uri())
 
 
 def main():

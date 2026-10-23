@@ -1,5 +1,6 @@
 # Reflection
 
+
 **1. Which issues were easiest to fix and which were hardest?**
 The style issues from Flake8 (blank lines, spacing, line length) and the Pylint
 renames and docstrings were easy because the tool says exactly what to change.
